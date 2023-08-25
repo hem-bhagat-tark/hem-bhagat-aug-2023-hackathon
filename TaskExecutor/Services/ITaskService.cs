@@ -9,6 +9,8 @@ namespace TaskExecutor.Services
 
         TaskResponse GetTask(Guid taskId);
 
+        List<TaskResponse> GetTasksByIds(List<Guid> taskIds);
+
         List<TaskResponse> GetAllTasks();
 
         List<TaskResponse> GetTasksByStatus(Status taskStatus);

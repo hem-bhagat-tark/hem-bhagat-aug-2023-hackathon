@@ -1,5 +1,8 @@
+using TaskExecutor.Events;
 using TaskExecutor.Services;
 using TaskExecutor.Services.Impl;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +14,17 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<INodeService, NodeService>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
+builder.Services.AddScoped<IRestService, RestService>();
+
+builder.Services.AddSingleton<NodeAvailableEvent>(_ => new NodeAvailableEvent((sender, e) =>
+{
+    var scope = builder.Services.BuildServiceProvider().CreateScope();
+    var scheduleService = scope.ServiceProvider.GetRequiredService<IScheduleService>();
+
+    scheduleService.ScheduleNextTaskInQueue();
+}));
 
 var app = builder.Build();
 

@@ -9,10 +9,12 @@ namespace TaskExecutor.Controllers
     public class TasksController : Controller
     {
         private readonly ITaskService _taskPersister;
+        private readonly IScheduleService _scheduleService;
 
-        public TasksController(ITaskService taskPersister)
+        public TasksController(ITaskService taskPersister, IScheduleService scheduleService)
         {
             _taskPersister = taskPersister;
+            _scheduleService = scheduleService;
         }
 
         [HttpGet]
@@ -38,6 +40,14 @@ namespace TaskExecutor.Controllers
             return Ok(tasks);
         }
 
+        [HttpGet]
+        [Route("/queue")]
+        public IActionResult GetTasksQueue()
+        {
+            var tasks = _scheduleService.GetTasksQueue();
+            return Ok(tasks);
+        }
+
         [HttpPost]
         [Route("{taskName}")]
         public IActionResult SubmitTask([FromRoute] string taskName)
@@ -46,6 +56,7 @@ namespace TaskExecutor.Controllers
             var task = _taskPersister.CreateTask(taskName);
 
             // send the task to scheduler
+            _scheduleService.ScheduleTask(task.Id);
 
             // return the created task data
             return Ok(task);

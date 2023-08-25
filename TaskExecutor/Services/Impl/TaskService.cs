@@ -41,6 +41,12 @@ namespace TaskExecutor.Services.Impl
             return Map(task);
         }
 
+        public List<TaskResponse> GetTasksByIds(List<Guid> taskIds)
+        {
+            var tasks = Tasks.Values.Where(_ => taskIds.Contains(_.Id)).ToList();
+            return MapList(tasks);
+        }
+
         public void UpdateTaskStatus(Guid taskId, Status taskStatus)
         {
             if (!Tasks.ContainsKey(taskId))
